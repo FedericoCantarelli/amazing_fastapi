@@ -1,4 +1,5 @@
-# FastAPI Template
+# Amazing FastAPI
+The definitive FastAPI template for complex project.
 ![Fast API](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=%23ffffff)
 ![Uv package manager](https://img.shields.io/badge/package_manager-606060?style=flat-square&logo=uv&logoColor=%23ffffff&label=uv&labelColor=DE5FE9)
 ![Code style](https://img.shields.io/badge/code_style-606060?style=flat-square&logo=ruff&logoColor=%23333&label=ruff&labelColor=D7FF64)
