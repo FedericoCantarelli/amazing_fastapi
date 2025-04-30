@@ -54,8 +54,8 @@ def setup_logging() -> None:
     logging.config.dictConfig(config)
     queue_handler = logging.getHandlerByName("queue_handler")
     if queue_handler is not None:
-        queue_handler.listener.start()
-        atexit.register(queue_handler.listener.stop)
+        queue_handler.listener.start()  # type: ignore
+        atexit.register(queue_handler.listener.stop)  # type: ignore
 
 
 class SimpleFormatter(logging.Formatter):
@@ -109,7 +109,7 @@ class JSONFormatter(logging.Formatter):
 
     def _prepare_log_dict(self, record: logging.LogRecord):
         always_fields = {
-            "message": f"{record.levelname.upper()} --- {record.filename} - {record.funcName}() line: {record.lineno} - {record.getMessage()}",
+            "message": f"{record.levelname.upper()} --- {record.filename} - {record.funcName}() line: - {record.getMessage()}",
             "timestamp": dt.datetime.fromtimestamp(
                 record.created, tz=dt.timezone.utc
             ).isoformat(),
