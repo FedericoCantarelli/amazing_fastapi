@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "simple": {
+      "()": "app.core.logger.SimpleFormatter"
+    },
+    "json": {
+      "()": "app.core.logger.JSONFormatter",
+      "fmt_keys": {
+        "severity": "levelname",
+        "message": "message",
+        "timestamp": "timestamp",
+        "logger": "name",
+        "module": "module",
+        "function": "funcName",
+        "line": "lineno",
+        "thread_name": "threadName"
+      }
+    }
+  },
+  "handlers": {
+    "stdout_local": {
+      "class": "logging.StreamHandler",
+      "level": "DEBUG",
+      "formatter": "simple",
+      "stream": "ext://sys.stdout"
+    },
+    "stdout_cloud": {
+      "class": "logging.StreamHandler",
+      "level": "DEBUG",
+      "formatter": "json",
+      "stream": "ext://sys.stdout"
+    },
+    "queue_handler": {
+      "class": "logging.handlers.QueueHandler",
+      "handlers": ["stdout_local", "stdout_cloud"],
+      "respect_handler_level": true
+    }
+  },
+  "loggers": {
+    "root": {
+      "level": "DEBUG",
+      "handlers": ["queue_handler"]
+    }
+  }
+}
