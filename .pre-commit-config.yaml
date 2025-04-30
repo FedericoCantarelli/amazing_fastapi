@@ -6,3 +6,13 @@ repos:
     - pre-push
   repo: https://github.com/commitizen-tools/commitizen
   rev: v4.6.0
+
+- repo: local
+  hooks:
+  - id: pytest
+    name: pytest
+    entry: uv run pytest
+    language: system
+    types: [python]
+    pass_filenames: false
+    always_run: true

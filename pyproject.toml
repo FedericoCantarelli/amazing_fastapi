@@ -25,6 +25,7 @@ dev = [
 env_files = [
     ".env.development",
 ]
+
 [tool.commitizen]
 name = "cz_conventional_commits"
 tag_format = "$version"
