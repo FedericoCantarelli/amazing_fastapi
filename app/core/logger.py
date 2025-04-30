@@ -49,7 +49,7 @@ def setup_logging() -> None:
     if os.environ.get("ENVIRONMENT") == "local":
         config["handlers"]["queue_handler"]["handlers"] = ["stdout_local"]
     else:
-        config["handlers"]["queue_handler"]["handlers"] = ["stdout_local"]
+        config["handlers"]["queue_handler"]["handlers"] = ["stdout_cloud"]
 
     logging.config.dictConfig(config)
     queue_handler = logging.getHandlerByName("queue_handler")

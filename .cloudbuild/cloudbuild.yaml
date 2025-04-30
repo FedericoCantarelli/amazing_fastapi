@@ -1,0 +1,46 @@
+steps:
+
+  # Build Docker Image and push in Artifact Registry using Kaniko
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    id: 'Build image and push to Artifact Registry'
+    args:
+      - --destination=${_REGION}-docker.pkg.dev/${_PROJECT_ID_BUILD}/${_IMAGE_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA
+      - --destination=${_REGION}-docker.pkg.dev/${_PROJECT_ID_BUILD}/${_IMAGE_REPO_NAME}/${_SERVICE_NAME}:latest
+      - --cache=true
+      - --cache-run-layers=true
+      - --cache-copy-layers=true
+      - --reproducible
+      - --registry-mirror=mirror.gcr.io
+      - --dockerfile=/workspace/Dockerfile
+
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'Deploy to Cloud Run'
+    entrypoint: 'gcloud'
+    args:
+      - run
+      - deploy
+      - $_CLOUD_RUN_NAME
+      - --image
+      - ${_REGION}-docker.pkg.dev/${_PROJECT_ID_BUILD}/${_IMAGE_REPO_NAME}/${_SERVICE_NAME}
+      - --timeout
+      - $_TIMEOUT 
+      - --memory
+      - $_MEMORY
+      - --service-account
+      - $_SERVICE_ACCOUNT
+      - --region
+      - $_REGION
+      - --project
+      - $_PROJECT_ID_DEPLOY
+      - --min-instances
+      - $_MIN_INSTANCES
+      - --ingress
+      - all
+      - --no-allow-unauthenticated
+    waitFor: ['Build image and push to Artifact Registry']
+
+
+options:
+  logging: CLOUD_LOGGING_ONLY
