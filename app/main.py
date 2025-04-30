@@ -3,7 +3,7 @@ from fastapi.concurrency import asynccontextmanager
 from fastapi.openapi.utils import get_openapi
 from app.core.exceptions import HTTPException, http_exception_handler
 from app.routers.healthcheck import router as ready_router
-from app.__version__ import __version__
+from app.__version__ import version
 
 
 import logging
@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="A simple API interface",
-    version=__version__,
+    version=version,
     description="<h2>Custom HTML</h2><p>Here you can set some custom html</p>",
     # docs_url=None,  # disable docs
     # redoc_url=None,  # disable redoc
