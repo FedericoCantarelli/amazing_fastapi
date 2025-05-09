@@ -11,5 +11,10 @@ class ReadyResponse(BaseModel):
 
     class ConfigDict:
         json_schema_extra = {
-            "example": {"api": "ready", "sha": "haj78ka", "env": "test"}
+            "example": {
+                "api": "ready",
+                "sha": "haj78ka",
+                "env": "test",
+                "version": "0.5.0",
+            }
         }

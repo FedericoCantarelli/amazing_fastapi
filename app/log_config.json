@@ -33,8 +33,14 @@
     },
     "queue_handler": {
       "class": "logging.handlers.QueueHandler",
+      "filters": ["request_id"],
       "handlers": ["stdout_local", "stdout_cloud"],
       "respect_handler_level": true
+    }
+  },
+  "filters": {
+    "request_id": {
+      "()": "app.core.logger.RequestIdFilter"
     }
   },
   "loggers": {

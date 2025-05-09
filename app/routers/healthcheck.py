@@ -2,6 +2,7 @@
 Healthcheck for api interface
 """
 
+import asyncio
 import logging
 
 from fastapi import APIRouter
@@ -61,11 +62,13 @@ async def health_check(config: config_dependency) -> ReadyResponse:
             "extra_labels": {
                 "env": config.get_env(),
                 "commit": config.get_sha(),
+                "version": version,
             }
         },
     )
     # Return the health check response
     logger.debug("End GET /")
+    await asyncio.sleep(3)
     return ReadyResponse(
         api="ready", sha=config.get_sha(), env=config.get_env(), version=version
     )

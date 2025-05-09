@@ -7,6 +7,7 @@ from fastapi.openapi.utils import get_openapi
 from app.__version__ import version
 from app.core import setup_logging
 from app.core.exceptions import HTTPException, http_exception_handler
+from app.middlewares.request_id_middleware import RequestIdMiddleware
 from app.routers.healthcheck import router as ready_router
 
 setup_logging()
@@ -53,6 +54,8 @@ app = FastAPI(
     lifespan=lifespan,
     openapi_tags=tags_metadata,
 )
+
+app.add_middleware(RequestIdMiddleware)
 
 
 # disable docs path
