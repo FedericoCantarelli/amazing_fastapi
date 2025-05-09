@@ -2,13 +2,15 @@
 Healthcheck for api interface
 """
 
-from fastapi import APIRouter
 import logging
-from app.core.exceptions import HTTPException
-from app.views import ReadyResponse
-from app.dependencies import config_dependency
-from app.views import ErrorResponse
+
+from fastapi import APIRouter
 from starlette import status
+
+from app.__version__ import version
+from app.core.exceptions import HTTPException
+from app.dependencies import config_dependency
+from app.views import ErrorResponse, ReadyResponse
 
 logger = logging.getLogger("app.ready")
 
@@ -64,4 +66,6 @@ async def health_check(config: config_dependency) -> ReadyResponse:
     )
     # Return the health check response
     logger.debug("End GET /")
-    return ReadyResponse(api="ready", sha=config.get_sha(), env=config.get_env())
+    return ReadyResponse(
+        api="ready", sha=config.get_sha(), env=config.get_env(), version=version
+    )

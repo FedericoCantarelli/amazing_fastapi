@@ -1,14 +1,13 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 from fastapi.openapi.utils import get_openapi
+
+from app.__version__ import version
+from app.core import setup_logging
 from app.core.exceptions import HTTPException, http_exception_handler
 from app.routers.healthcheck import router as ready_router
-from app.__version__ import version
-
-
-import logging
-
-from app.core import setup_logging
 
 setup_logging()
 logger = logging.getLogger("app")
@@ -28,7 +27,7 @@ def custom_openapi():
         title="Proposal API",
         description="""API for evaluating commercial proposals in TechnoGym.""",
         routes=app.routes,
-        version="1.0",
+        version=version,
     )
     openapi_schema["info"]["x-logo"] = {
         "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Technogym_Logo.svg/640px-Technogym_Logo.svg.png"
