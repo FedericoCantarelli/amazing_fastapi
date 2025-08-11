@@ -14,8 +14,7 @@
         "logger": "name",
         "module": "module",
         "function": "funcName",
-        "line": "lineno",
-        "thread_name": "threadName"
+        "line": "lineno"
       }
     }
   },
@@ -34,8 +33,14 @@
     },
     "queue_handler": {
       "class": "logging.handlers.QueueHandler",
+      "filters": ["request_id"],
       "handlers": ["stdout_local", "stdout_cloud"],
       "respect_handler_level": true
+    }
+  },
+  "filters": {
+    "request_id": {
+      "()": "app.core.logger.RequestIdFilter"
     }
   },
   "loggers": {

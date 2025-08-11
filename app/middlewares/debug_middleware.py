@@ -1,9 +1,9 @@
+import logging
+
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.utils import LogSetupper
-
-logger = LogSetupper("debug_middleware").setup()
+logger = logging.getLogger("app.debugmiddleware")
 
 
 class DebugMiddleware(BaseHTTPMiddleware):

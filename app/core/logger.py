@@ -3,14 +3,16 @@ Implementation of the LogSetupper class.
 The logger is configured using the value of the ENV environment variable.
 """
 
+import atexit
 import datetime as dt
 import json
 import logging.config
-from typing import override
-import traceback
-import pathlib
-import atexit
 import os
+import pathlib
+import traceback
+from typing import override
+
+from app.middlewares.request_id_middleware import correlation_id
 
 LOCAL_DATETIME_FORMAT_STRING = "%Y-%m-%d %H:%M:%S"
 
@@ -49,13 +51,13 @@ def setup_logging() -> None:
     if os.environ.get("ENVIRONMENT") == "local":
         config["handlers"]["queue_handler"]["handlers"] = ["stdout_local"]
     else:
-        config["handlers"]["queue_handler"]["handlers"] = ["stdout_local"]
+        config["handlers"]["queue_handler"]["handlers"] = ["stdout_cloud"]
 
     logging.config.dictConfig(config)
     queue_handler = logging.getHandlerByName("queue_handler")
     if queue_handler is not None:
-        queue_handler.listener.start()
-        atexit.register(queue_handler.listener.stop)
+        queue_handler.listener.start()  # type: ignore
+        atexit.register(queue_handler.listener.stop)  # type: ignore
 
 
 class SimpleFormatter(logging.Formatter):
@@ -70,10 +72,11 @@ class SimpleFormatter(logging.Formatter):
     @override
     def format(self, record: logging.LogRecord):
         extra_labels = getattr(record, "extra_labels", {})
-        return "[{timestamp}] {level}: {msg} ({filename}:{lineno}) {extra}".format(
+        return "[{timestamp}] [{request_id}] {level}: {msg} ({filename}:{lineno}) {extra}".format(
             timestamp=dt.datetime.fromtimestamp(
                 record.created, tz=dt.timezone.utc
             ).strftime(LOCAL_DATETIME_FORMAT_STRING),
+            request_id=record.request_id,  # type: ignore
             level=record.levelname,
             msg=record.getMessage(),
             filename=record.filename,
@@ -109,7 +112,7 @@ class JSONFormatter(logging.Formatter):
 
     def _prepare_log_dict(self, record: logging.LogRecord):
         always_fields = {
-            "message": f"{record.levelname.upper()} --- {record.filename} - {record.funcName}() line: {record.lineno} - {record.getMessage()}",
+            "message": f"{record.levelname.upper()} --- {record.funcName}:{record.lineno} - {record.getMessage()} ({record.filename})",
             "timestamp": dt.datetime.fromtimestamp(
                 record.created, tz=dt.timezone.utc
             ).isoformat(),
@@ -136,3 +139,9 @@ class JSONFormatter(logging.Formatter):
                 message[key] = val
 
         return message
+
+
+class RequestIdFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.request_id = correlation_id.get()
+        return True

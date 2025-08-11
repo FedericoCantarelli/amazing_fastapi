@@ -1,14 +1,14 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 from fastapi.openapi.utils import get_openapi
-from app.core.exceptions import HTTPException, http_exception_handler
-from app.routers.healthcheck import router as ready_router
-from app.__version__ import __version__
 
-
-import logging
-
+from app.__version__ import version
 from app.core import setup_logging
+from app.core.exceptions import HTTPException, http_exception_handler
+from app.middlewares.request_id_middleware import RequestIdMiddleware
+from app.routers.healthcheck import router as ready_router
 
 setup_logging()
 logger = logging.getLogger("app")
@@ -28,7 +28,7 @@ def custom_openapi():
         title="Proposal API",
         description="""API for evaluating commercial proposals in TechnoGym.""",
         routes=app.routes,
-        version="1.0",
+        version=version,
     )
     openapi_schema["info"]["x-logo"] = {
         "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Technogym_Logo.svg/640px-Technogym_Logo.svg.png"
@@ -47,13 +47,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="A simple API interface",
-    version=__version__,
+    version=version,
     description="<h2>Custom HTML</h2><p>Here you can set some custom html</p>",
     # docs_url=None,  # disable docs
     # redoc_url=None,  # disable redoc
     lifespan=lifespan,
     openapi_tags=tags_metadata,
 )
+
+app.add_middleware(RequestIdMiddleware)
 
 
 # disable docs path
